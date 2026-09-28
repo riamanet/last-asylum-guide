@@ -24,8 +24,6 @@
 <button class="card" data-c="mage"><span class="ico">🔮</span><b>마법사</b></button>
 <div class="drop hidden" data-row="etc,mage"></div>
 </section>
-
-
 </main>
 <div id="viewer" class="viewer hidden"><div class="viewerbar"><button id="close">‹</button><strong id="vtitle"></strong></div><div class="viewerbody"><div id="vnote"></div><img id="vimg"></div></div>
 <script>
@@ -50,8 +48,40 @@ function showCat(c){
   }
 }
 document.querySelectorAll('.card').forEach(x=>x.onclick=()=>showCat(x.dataset.c));
-function openGuide(i){const g=guides[i];document.querySelector('#vtitle').textContent=g.title;document.querySelector('#vimg').src=g.image+'?v=20260929';const n=document.querySelector('#vnote');if(g.title==='프레이야 구매방법'){n.innerHTML='<div class="note"><b>VIP 1, 3, 4, 7 구매</b><span>최저가 216,500원 / 조각 340개로 4성</span></div>'}else n.innerHTML='';document.querySelector('#viewer').classList.remove('hidden');document.body.style.overflow='hidden'}
-document.querySelector('#close').onclick=()=>{document.querySelector('#viewer').classList.add('hidden');document.body.style.overflow='';document.querySelector('#vimg').src=''}
+function renderGuide(i){
+  const g=guides[i];
+  document.querySelector('#vtitle').textContent=g.title;
+  document.querySelector('#vimg').src=g.image+'?v=20260929';
+  const n=document.querySelector('#vnote');
+  if(g.title==='프레이야 구매방법'){n.innerHTML='<div class="note"><b>VIP 1, 3, 4, 7 구매</b><span>최저가 216,500원 / 조각 340개로 4성</span></div>'}else n.innerHTML='';
+  document.querySelector('#viewer').classList.remove('hidden');
+  document.body.style.overflow='hidden';
+}
+function hideGuide(){
+  document.querySelector('#viewer').classList.add('hidden');
+  document.body.style.overflow='';
+  document.querySelector('#vimg').src='';
+}
+function openGuide(i){
+  renderGuide(i);
+  history.pushState({view:'guide',guide:i},'', '#guide-'+i);
+}
+document.querySelector('#close').onclick=()=>{
+  if(!document.querySelector('#viewer').classList.contains('hidden')) history.back();
+};
+window.addEventListener('popstate',()=>{
+  const m=location.hash.match(/^#guide-(\d+)$/);
+  if(m){
+    const i=Number(m[1]);
+    if(guides[i] && guides[i].image) renderGuide(i);
+  }else{
+    hideGuide();
+  }
+});
+if(location.hash.match(/^#guide-(\d+)$/)){
+  const i=Number(RegExp.$1);
+  if(guides[i] && guides[i].image) renderGuide(i);
+}
 function doSearch(){
  const q=document.querySelector('#q').value.trim().toLowerCase();
  if(!q){results.classList.add('hidden');resultitems.innerHTML='';return}
