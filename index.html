@@ -1,0 +1,64 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>LAST ASYLUM 공략</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#20232a;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}.app{max-width:560px;margin:auto;padding:24px 16px 50px}
+.brand{padding:10px 4px 18px}.brand small{font-weight:800;letter-spacing:.15em;color:#8a9099}.brand h1{margin:4px 0 0;font-size:30px;letter-spacing:-1.2px}
+.search{position:sticky;top:8px;z-index:5;display:flex;align-items:center;background:white;border:1px solid #e4e7eb;border-radius:18px;padding:0 15px;height:56px;box-shadow:0 8px 24px #20242b0d}.search input{border:0;outline:0;min-width:0;flex:1;font-size:16px;background:transparent}.search #searchBtn{border:0;background:#252a31;color:white;font-weight:800;border-radius:11px;padding:10px 14px;margin-left:8px}.search span{font-size:20px;margin-right:10px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-top:16px;align-items:start}.grid .card{width:100%}.drop{grid-column:1/-1;background:white;border:1px solid #e5e7eb;border-radius:16px;padding:7px;box-shadow:0 7px 22px #20242b0a}.drop .item{margin-top:5px;padding:12px 11px;font-size:13px}.drop .item:first-child{margin-top:0}.card{border:1px solid #e5e7eb;background:white;border-radius:20px;min-height:112px;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:9px;box-shadow:0 7px 22px #20242b0a}.card .ico{font-size:33px}.card b{font-size:15px}
+.section{margin-top:16px;background:white;border:1px solid #e5e7eb;border-radius:20px;padding:15px}.head{display:flex;align-items:center;gap:10px;margin-bottom:10px}.back{border:0;border-radius:12px;width:39px;height:39px;font-size:25px}.head h2{margin:0;font-size:21px}.item{width:100%;border:0;text-align:left;background:#f6f7f9;border-radius:14px;padding:15px;margin-top:8px;font-weight:750;font-size:15px;display:flex;justify-content:space-between;align-items:center;color:#20232a;text-decoration:none}.item em{font-style:normal;color:#a0a5ad;font-size:20px}.empty{text-align:center;color:#888;padding:22px}
+.viewer{position:fixed;inset:0;background:#f4f5f7;z-index:20;overflow:auto}.viewerbar{position:sticky;top:0;z-index:2;background:#ffffffed;backdrop-filter:blur(12px);display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid #e5e7eb}.viewerbar button{border:0;background:#eef0f3;border-radius:11px;width:40px;height:40px;font-size:25px}.viewerbar strong{font-size:16px}.viewerbody{max-width:760px;margin:auto;padding:14px}.viewerbody img{display:block;width:100%;height:auto;border-radius:12px;background:white}.note{background:white;border:1px solid #e3e6ea;border-radius:15px;padding:15px 16px;margin-bottom:12px;line-height:1.65}.note b{display:block;font-size:16px}.note span{font-size:15px}.hidden{display:none!important}
+</style></head><body><main class="app">
+<header class="brand"><small>LAST ASYLUM</small><h1>게임 공략</h1></header>
+<div class="search"><span>🔍</span><input id="q" placeholder="공략을 검색하세요"><button id="searchBtn">확인</button></div>
+<section id="results" class="section hidden"><div class="head"><h2>🔍 검색 결과</h2></div><div id="resultitems"></div></section>
+<section id="grid" class="grid">
+<button class="card" data-c="beginner"><span class="ico">🌱</span><b>초보자 가이드</b></button>
+<button class="card" data-c="hero"><span class="ico">👑</span><b>영웅</b></button>
+<div class="drop hidden" data-row="beginner,hero"></div>
+<button class="card" data-c="guild"><span class="ico">⚔️</span><b>길드전</b></button>
+<button class="card" data-c="warrior"><span class="ico">🛡️</span><b>전사</b></button>
+<div class="drop hidden" data-row="guild,warrior"></div>
+<button class="card" data-c="calculator"><span class="ico">🧮</span><b>계산기</b></button>
+<button class="card" data-c="ranger"><span class="ico">🏹</span><b>레인저</b></button>
+<div class="drop hidden" data-row="calculator,ranger"></div>
+<button class="card" data-c="etc"><span class="ico">📖</span><b>기타 공략</b></button>
+<button class="card" data-c="mage"><span class="ico">🔮</span><b>마법사</b></button>
+<div class="drop hidden" data-row="etc,mage"></div>
+</section>
+
+
+</main>
+<div id="viewer" class="viewer hidden"><div class="viewerbar"><button id="close">‹</button><strong id="vtitle"></strong></div><div class="viewerbody"><div id="vnote"></div><img id="vimg"></div></div>
+<script>
+const cats={"beginner": ["🌱", "초보자 가이드"], "hero": ["👑", "영웅"], "guild": ["⚔️", "길드전"], "warrior": ["🛡️", "전사"], "calculator": ["🧮", "계산기"], "ranger": ["🏹", "레인저"], "etc": ["📖", "기타 공략"], "mage": ["🔮", "마법사"]};
+const guides=[{"category": "beginner", "title": "협곡대전 신청방법", "image": "images/01.png"}, {"category": "beginner", "title": "비약쟁탈전 신청방법", "image": "images/02.png"}, {"category": "beginner", "title": "마차 약탈방법", "image": "images/03.png"}, {"category": "beginner", "title": "팔콘퀘스트 저장 가이드", "image": "images/04.png"}, {"category": "beginner", "title": "궁중대신 활용법", "image": "images/05.png"}, {"category": "guild", "title": "월요일 길드전", "image": "images/06.png"}, {"category": "guild", "title": "화요일 길드전", "image": "images/07.png"}, {"category": "guild", "title": "수요일 길드전", "image": "images/08.png"}, {"category": "guild", "title": "목요일 길드전", "image": "images/09.png"}, {"category": "guild", "title": "금요일 길드전", "image": "images/10.png"}, {"category": "guild", "title": "토요일 길드전", "image": "images/11.png"}, {"category": "hero", "title": "영웅 스킬 강화 가이드", "image": "images/12.jpg"}, {"category": "hero", "title": "성급별 필요 영웅조각 수", "image": "images/13.png"}, {"category": "hero", "title": "월드보스 영웅 배치 가이드", "image": "images/14.png"}, {"category": "warrior", "title": "전사 조합 완전 이해", "image": "images/15.png"}, {"category": "warrior", "title": "전사 성장 체크리스트", "image": "images/16.png"}, {"category": "warrior", "title": "장비·스킬 투자 전략", "image": "images/17.png"}, {"category": "warrior", "title": "다스칼 완전 육성 및 운용 가이드", "image": "images/18.png"}, {"category": "warrior", "title": "하퍼 완전 육성 및 운용 가이드", "image": "images/19.png"}, {"category": "warrior", "title": "아서 완전 육성 및 운용 가이드", "image": "images/20.png"}, {"category": "warrior", "title": "조야 완전 육성 및 운용 가이드", "image": "images/21.png"}, {"category": "warrior", "title": "말레나 완전 육성 및 운용 가이드", "image": "images/22.png"}, {"category": "ranger", "title": "레인저 조합이란 무엇인가", "image": "images/23.png"}, {"category": "ranger", "title": "레인저 조합의 전투 메커니즘", "image": "images/24.png"}, {"category": "ranger", "title": "레인저 조합 실수하지 않는 운영법", "image": "images/25.png"}, {"category": "ranger", "title": "레인저를 더 깊이 이해하는 8가지 사실", "image": "images/26.png"}, {"category": "ranger", "title": "레인저 조합 FAQ", "image": "images/27.png"}, {"category": "mage", "title": "마법사 조합이란 무엇인가?", "image": "images/28.png"}, {"category": "mage", "title": "스타더스트 완전 육성 및 운용 가이드", "image": "images/29.png"}, {"category": "mage", "title": "Joker 완전 육성 및 운용 가이드", "image": "images/30.png"}, {"category": "mage", "title": "Annie 완전 육성 및 운용 가이드", "image": "images/31.png"}, {"category": "mage", "title": "니콜(Nicole) 완전 육성 및 운용 가이드", "image": "images/32.png"}, {"category": "mage", "title": "빌리(Billy) 완전 육성 및 운용 가이드", "image": "images/33.png"}, {"category": "mage", "title": "울프레드 완전 육성 및 운용 가이드", "image": "images/34.png"}, {"category": "etc", "title": "21~30 성당 업 조건", "image": "images/35.png"}, {"category": "etc", "title": "계단식 훈련 가이드", "image": "images/36.png"}, {"category": "etc", "title": "장비강화 및 성급 공략", "image": "images/37.png"}, {"category": "etc", "title": "서바이벌배틀 시간표", "image": "images/38.png"}, {"category": "etc", "title": "수정골짜기 공략", "image": "images/39.png"}, {"category": "etc", "title": "까마귀룬 초기공략 1", "image": "images/40.png"}, {"category": "etc", "title": "까마귀룬 초기공략 2", "image": "images/41.png"}, {"category": "etc", "title": "까마귀룬 초기공략 3", "image": "images/42.png"}, {"category": "etc", "title": "까마귀룬 전략 가이드", "image": "images/43.png"}, {"category": "etc", "title": "프레이야 구매방법", "image": "images/44.jpg"}, {"category": "calculator", "title": "건물 업그레이드 계산기", "url": "https://riamanet.github.io/last-asylum-calculator/"}, {"category": "calculator", "title": "정예부대 최소연구 계산기", "url": "https://riamanet.github.io/last-asylum-research/"}, {"category": "calculator", "title": "영웅 계산기", "url": "https://riamanet.github.io/last-asylum-hero/"}];
+const results=document.querySelector('#results'),resultitems=document.querySelector('#resultitems');
+function row(g){if(g.url)return `<a class="item" href="${g.url}" target="_blank">${g.title}<em>›</em></a>`;return `<button class="item" onclick="openGuide(${guides.indexOf(g)})">${g.title}<em>›</em></button>`}
+function showCat(c){
+  let target=null;
+  document.querySelectorAll('.drop').forEach(function(d){
+    if(d.dataset.row.split(',').indexOf(c)!==-1) target=d;
+  });
+  if(!target) return;
+  const same=(target.dataset.open===c && !target.classList.contains('hidden'));
+  document.querySelectorAll('.drop').forEach(function(d){
+    d.classList.add('hidden'); d.dataset.open='';
+  });
+  if(!same){
+    target.innerHTML=guides.filter(function(g){return g.category===c}).map(row).join('');
+    target.dataset.open=c;
+    target.classList.remove('hidden');
+  }
+}
+document.querySelectorAll('.card').forEach(x=>x.onclick=()=>showCat(x.dataset.c));
+function openGuide(i){const g=guides[i];document.querySelector('#vtitle').textContent=g.title;document.querySelector('#vimg').src=g.image;const n=document.querySelector('#vnote');if(g.title==='프레이야 구매방법'){n.innerHTML='<div class="note"><b>VIP 1, 3, 4, 7 구매</b><span>최저가 216,500원 / 조각 340개로 4성</span></div>'}else n.innerHTML='';document.querySelector('#viewer').classList.remove('hidden');document.body.style.overflow='hidden'}
+document.querySelector('#close').onclick=()=>{document.querySelector('#viewer').classList.add('hidden');document.body.style.overflow='';document.querySelector('#vimg').src=''}
+function doSearch(){
+ const q=document.querySelector('#q').value.trim().toLowerCase();
+ if(!q){results.classList.add('hidden');resultitems.innerHTML='';return}
+ const f=guides.filter(g=>(g.title+' '+cats[g.category][1]).toLowerCase().includes(q));
+ resultitems.innerHTML=f.length?f.map(row).join(''):'<div class="empty">검색 결과가 없습니다.</div>';
+ results.classList.remove('hidden');
+}
+document.querySelector('#searchBtn').onclick=doSearch;
+document.querySelector('#q').addEventListener('keydown',e=>{if(e.key==='Enter')doSearch()});
+</script></body></html>
