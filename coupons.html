@@ -13,7 +13,7 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
 .smallbtn{border:1px solid #e4e7eb;background:white;border-radius:13px;padding:10px 12px;color:#28303b;font-size:13px;font-weight:800;text-decoration:none;box-shadow:0 6px 18px #20242b0b}
 .brand{display:flex;justify-content:space-between;align-items:center;padding:28px 4px 16px}
 .brand small{color:#8a9099;letter-spacing:.16em;font-weight:850}
-.brand h1{margin:5px 0 0;font-size:31px;letter-spacing:-1.2px}.gift{font-size:46px}
+.brand h1{margin:5px 0 0;font-size:31px;letter-spacing:-1.2px}
 .summary{background:linear-gradient(125deg,#202832,#3b4554);color:#fff;padding:20px;border-radius:22px;box-shadow:0 12px 30px #18202d21}
 .summary p{margin:0;font-size:12px;color:#c8d2dc;font-weight:700}
 .summary b{font-size:30px;display:block;margin:5px 0 3px}.statsrow{display:flex;align-items:center;justify-content:space-between;gap:9px;color:#dae1e8;font-size:11px}
@@ -21,8 +21,6 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
 .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
 .action{min-height:51px;border:1px solid #dfe3e9;border-radius:14px;background:#fff;color:#242a33;font-size:13px;font-weight:850;padding:10px 8px;box-shadow:0 7px 20px #20242b0b}
 .action:active,.smallbtn:active,.copy:active{transform:scale(.985)}.action.add{background:#252a31;border-color:#252a31;color:white}
-.search{margin:16px 0 0;background:#fff;border:1px solid #e3e7eb;border-radius:14px;padding:0 13px;display:flex;align-items:center;gap:8px;height:49px}
-.search input{border:0;background:none;outline:0;width:100%;font-size:15px;min-width:0}
 .heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:24px 3px 11px}.heading h2{margin:0;font-size:19px}.heading small{font-size:11px;color:#8a9099}
 .list{display:flex;flex-direction:column;gap:9px}
 .coupon{min-height:65px;border:1px solid #e5e8eb;border-radius:17px;background:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 6px 21px #20242b0c;min-width:0}
@@ -59,11 +57,10 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
 <body>
 <main class="shell">
   <nav class="nav"><a class="smallbtn" href="./">‹ 이전</a><button class="smallbtn" type="button" id="resetBtn">↺ 초기화</button></nav>
-  <header class="brand"><div><small>LAST ASYLUM</small><h1>🎁 쿠폰코드</h1></div><span class="gift" aria-hidden="true">🎟️</span></header>
+  <header class="brand"><div><small>LAST ASYLUM</small><h1>🎁 쿠폰코드</h1></div></header>
   <section class="summary"><p>아직 사용 완료하지 않은 코드</p><b id="remainingCount">확인 중…</b><div class="statsrow"><span id="doneCount">사용 완료 0개</span><span id="updated">목록 갱신 중</span></div></section>
   
   <div class="actions"><button class="action" type="button" id="reportFail">🚫 코드 사용이 안 돼요</button><button class="action add" type="button" id="reportAdd">＋ 코드 추가해주세요</button></div>
-  <label class="search"><span>🔎</span><input id="search" aria-label="쿠폰코드 검색" placeholder="쿠폰코드 검색" autocomplete="off"></label>
   <div class="heading"><h2>쿠폰 목록</h2><small id="listCount"></small></div>
   <div class="list" id="codeList"></div>
   <details class="fold" id="usedDetails"><summary id="usedSummary">사용 완료 코드 (0)</summary><div class="fold-body" id="usedList"></div></details>
@@ -106,15 +103,14 @@ function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify([...done]));
 function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2300)}
 function elem(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
 async function copyCode(text){try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text)}else{const e=elem('textarea');e.value=text;e.style.position='fixed';e.style.opacity='0';document.body.append(e);e.select();if(!document.execCommand('copy'))throw Error('copy failed');e.remove()}showToast(text+' 복사했어요')}catch(_){prompt('길게 눌러 코드를 복사해 주세요',text)}}
-function render(){const query=$('search').value.trim().toUpperCase();const active=data.codes.filter(c=>!done.has(c));const finished=data.codes.filter(c=>done.has(c));$('remainingCount').textContent=active.length+'개';$('doneCount').textContent='사용 완료 '+finished.length+'개';$('updated').textContent='업데이트 '+data.updated;$('listCount').textContent=active.length+'개';$('usedSummary').textContent=`사용 완료 코드 (${finished.length})`;
-  const main=$('codeList');main.replaceChildren();const matched=active.filter(s=>s.includes(query));if(!matched.length)main.append(elem('div','empty',active.length?'검색 결과가 없어요.':'모든 코드를 사용 완료했어요!'));
-  for(const code of matched){const card=elem('article','coupon');const text=elem('div');text.append(elem('div','value',code));const tools=elem('div','right');const copy=elem('button','copy','복사');copy.type='button';copy.onclick=()=>copyCode(code);const mark=elem('button','markused','✓ 사용완료');mark.type='button';mark.setAttribute('aria-label',code+' 사용 완료');mark.onclick=()=>{done.add(code);save();render();showToast('사용 완료 목록으로 옮겼어요')};tools.append(copy,mark);card.append(text,tools);main.append(card)}
+function render(){const active=data.codes.filter(c=>!done.has(c));const finished=data.codes.filter(c=>done.has(c));$('remainingCount').textContent=active.length+'개';$('doneCount').textContent='사용 완료 '+finished.length+'개';$('updated').textContent='업데이트 '+data.updated;$('listCount').textContent=active.length+'개';$('usedSummary').textContent=`사용 완료 코드 (${finished.length})`;
+  const main=$('codeList');main.replaceChildren();if(!active.length)main.append(elem('div','empty','모든 코드를 사용 완료했어요!'));
+  for(const code of active){const card=elem('article','coupon');const text=elem('div');text.append(elem('div','value',code));const tools=elem('div','right');const copy=elem('button','copy','복사');copy.type='button';copy.onclick=()=>copyCode(code);const mark=elem('button','markused','✓ 사용완료');mark.type='button';mark.setAttribute('aria-label',code+' 사용 완료');mark.onclick=()=>{done.add(code);save();render();showToast('사용 완료 목록으로 옮겼어요')};tools.append(copy,mark);card.append(text,tools);main.append(card)}
   const usedList=$('usedList');usedList.replaceChildren();if(!finished.length)usedList.append(elem('div','empty','사용 완료한 코드는 아직 없어요.'));
   finished.forEach(code=>{const row=elem('div','fold-row');row.append(elem('b','',code));const btn=elem('button','restore','되돌리기');btn.onclick=()=>{done.delete(code);save();render()};row.append(btn);usedList.append(row)});
 }
 async function load(){applySources();try{const r=await fetch('./codes.json?t='+Date.now(),{cache:'no-store'});if(r.ok){const j=await r.json();if(Array.isArray(j.codes)){baseData=j;applySources()}}}catch(_){}
 if(hasBackend){const cb='__lastAsylumCouponPage';const script=document.createElement('script');window[cb]=j=>{if(j&&Array.isArray(j.codes)){sheetData=j;applySources()}script.remove();delete window[cb]};script.onerror=()=>{script.remove();delete window[cb]};script.src=endpoint+'?callback='+cb+'&t='+Date.now();document.head.append(script)}}
-$('search').addEventListener('input',render);
 $('resetBtn').onclick=()=>{if(!done.size){showToast('초기화할 사용 내역이 없어요');return}if(confirm('사용 완료 체크를 모두 초기화할까요?')){done.clear();save();$('usedDetails').open=false;render();showToast('모든 코드가 다시 표시돼요')}};
 function modal(type){reportType=type;$('dialogTitle').textContent=type==='add'?'＋ 쿠폰코드 추가 요청':'🚫 코드 사용 불가 제보';$('dialogIntro').textContent=type==='add'?'새 쿠폰코드를 알려주시면 관리자가 검토한 뒤 등록합니다.':'게임에서 쿠폰이 적용되지 않는 경우 제보해 주세요. 이미 등록한 계정에서만 사용 불가한 경우는 제외해 주세요.';$('reasonWrap').classList.toggle('hidden',type==='add');$('reportForm').reset();$('modalNotice').textContent='';$('overlay').classList.remove('hidden');$('reportCode').focus();}
 $('reportAdd').onclick=()=>modal('add');$('reportFail').onclick=()=>modal('invalid');$('closeModal').onclick=()=>$('overlay').classList.add('hidden');$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))$('overlay').classList.add('hidden')});document.addEventListener('keydown',e=>{if(e.key==='Escape')$('overlay').classList.add('hidden')});
