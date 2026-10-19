@@ -64,16 +64,18 @@ def extract_codes(message: dict) -> list[str]:
         texts.extend([embed.get('title') or '', embed.get('description') or ''])
         for field in embed.get('fields') or []:
             texts.extend([field.get('name') or '', field.get('value') or ''])
-    found = set()
+    found = {}
     for txt in texts:
         for match in LABELED.finditer(txt):
             if likely_code(match.group(1)):
-                found.add(normalize(match.group(1)))
+                code = match.group(1)
+                found.setdefault(normalize(code), code)
         for line in txt.splitlines():
             match = TOKEN_LINE.fullmatch(line.strip())
             if match and likely_code(match.group(1)):
-                found.add(normalize(match.group(1)))
-    return sorted(found)
+                code = match.group(1)
+                found.setdefault(normalize(code), code)
+    return sorted(found.values(), key=normalize)
 
 
 def official_source_id(message: dict) -> str:
@@ -171,9 +173,10 @@ def collect(messages: list[dict], codes: dict, state: dict, log: dict, guild_id:
         ref = msg.get('message_reference') or {}
         source_url = f"https://discord.com/channels/{ref.get('guild_id')}/{source_id}/{ref.get('message_id')}" if ref.get('guild_id') and ref.get('message_id') else f"https://discord.com/channels/{guild_id}/{CHANNEL_ID}/{msg['id']}"
         for code in extract_codes(msg):
-            if code in known or code in blocked:
+            key = normalize(code)
+            if key in known or key in blocked:
                 continue
-            known.add(code)
+            known.add(key)
             additions.append(code)
             log.setdefault('items', []).append({'code': code, 'source': source_url, 'found_at': now, 'source_type': 'official_discord_crosspost'})
     if additions:
