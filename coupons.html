@@ -89,36 +89,47 @@ const hasBackend=/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(end
 const $=s=>document.getElementById(s);
 let baseData=FALLBACK,sheetData=null;
 let data=FALLBACK,done=new Set(),reportType='add',toastTimer;
-try{const cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');if(Array.isArray(cached))done=new Set(cached.map(String));}catch(_){}
-const cleanCode=s=>String(s||'').trim().replace(/\s/g,'').toUpperCase();
-const list=a=>Array.isArray(a)?[...new Set(a.map(cleanCode).filter(s=>/^[A-Z0-9]{5,24}$/.test(s)))]:[];
+// 실제 게임에서 입력할 때는 쿠폰 원본의 대/소문자를 바꾸지 않습니다.
+// 비교와 사용완료 저장에만 대문자로 변환해 기존 체크 내역을 유지합니다.
+const cleanCode=s=>String(s||'').trim().replace(/\s/g,'');
+const codeKey=s=>cleanCode(s).toUpperCase();
+const list=a=>Array.isArray(a)?a.map(cleanCode).filter(s=>/^[A-Za-z0-9]{5,24}$/.test(s)):[];
+// 현재 Google Apps Script가 대문자로 보내는 기존 코드의 확인된 원본 표기
+const ORIGINAL_CASE={TWLAP666:'twlap666',TWLAP888:'twlap888', '2GM3EYXYA':'2gm3eYxYa'};
+try{const cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');if(Array.isArray(cached))done=new Set(cached.map(codeKey));}catch(_){}
 function applySources(){
-  const blocked=[...new Set([...list(baseData.blocked),...list(sheetData?.blocked)])];
-  const blockset=new Set(blocked);
+  const blocked=new Map();
+  for(const code of [...list(baseData.blocked),...list(sheetData?.blocked)]) blocked.set(codeKey(code),code);
+  const items=new Map();
+  // 우선 서버 목록을 수집한 후 GitHub 원본에 있는 철자를 우선 적용합니다.
+  for(const code of [...list(sheetData?.codes),...list(baseData.codes)]){
+    const key=codeKey(code);
+    if(!blocked.has(key)) items.set(key,ORIGINAL_CASE[key]||code);
+  }
   data={updated:[baseData.updated,sheetData?.updated].filter(Boolean).sort().at(-1)||'미확인',
-    codes:[...new Set([...list(baseData.codes),...list(sheetData?.codes)])].filter(c=>!blockset.has(c)),blocked};
+    codes:[...items.values()],blocked:[...blocked.values()]};
   render();
 }
 function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify([...done]));}catch(_){showToast('사용 내역 저장에 실패했어요.')}}
 function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2300)}
 function elem(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
 async function copyCode(text){try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text)}else{const e=elem('textarea');e.value=text;e.style.position='fixed';e.style.opacity='0';document.body.append(e);e.select();if(!document.execCommand('copy'))throw Error('copy failed');e.remove()}showToast(text+' 복사했어요')}catch(_){prompt('길게 눌러 코드를 복사해 주세요',text)}}
-function render(){const active=data.codes.filter(c=>!done.has(c));const finished=data.codes.filter(c=>done.has(c));$('remainingCount').textContent=active.length+'개';$('doneCount').textContent='사용 완료 '+finished.length+'개';$('updated').textContent='업데이트 '+data.updated;$('listCount').textContent=active.length+'개';$('usedSummary').textContent=`사용 완료 코드 (${finished.length})`;
+function render(){const active=data.codes.filter(c=>!done.has(codeKey(c)));const finished=data.codes.filter(c=>done.has(codeKey(c)));$('remainingCount').textContent=active.length+'개';$('doneCount').textContent='사용 완료 '+finished.length+'개';$('updated').textContent='업데이트 '+data.updated;$('listCount').textContent=active.length+'개';$('usedSummary').textContent=`사용 완료 코드 (${finished.length})`;
   const main=$('codeList');main.replaceChildren();if(!active.length)main.append(elem('div','empty','모든 코드를 사용 완료했어요!'));
-  for(const code of active){const card=elem('article','coupon');const text=elem('div');text.append(elem('div','value',code));const tools=elem('div','right');const copy=elem('button','copy','복사');copy.type='button';copy.onclick=()=>copyCode(code);const mark=elem('button','markused','✓ 사용완료');mark.type='button';mark.setAttribute('aria-label',code+' 사용 완료');mark.onclick=()=>{done.add(code);save();render();showToast('사용 완료 목록으로 옮겼어요')};tools.append(copy,mark);card.append(text,tools);main.append(card)}
+  for(const code of active){const card=elem('article','coupon');const text=elem('div');text.append(elem('div','value',code));const tools=elem('div','right');const copy=elem('button','copy','복사');copy.type='button';copy.onclick=()=>copyCode(code);const mark=elem('button','markused','✓ 사용완료');mark.type='button';mark.setAttribute('aria-label',code+' 사용 완료');mark.onclick=()=>{done.add(codeKey(code));save();render();showToast('사용 완료 목록으로 옮겼어요')};tools.append(copy,mark);card.append(text,tools);main.append(card)}
   const usedList=$('usedList');usedList.replaceChildren();if(!finished.length)usedList.append(elem('div','empty','사용 완료한 코드는 아직 없어요.'));
-  finished.forEach(code=>{const row=elem('div','fold-row');row.append(elem('b','',code));const btn=elem('button','restore','되돌리기');btn.onclick=()=>{done.delete(code);save();render()};row.append(btn);usedList.append(row)});
+  finished.forEach(code=>{const row=elem('div','fold-row');row.append(elem('b','',code));const btn=elem('button','restore','되돌리기');btn.onclick=()=>{done.delete(codeKey(code));save();render()};row.append(btn);usedList.append(row)});
 }
 async function load(){applySources();try{const r=await fetch('./codes.json?t='+Date.now(),{cache:'no-store'});if(r.ok){const j=await r.json();if(Array.isArray(j.codes)){baseData=j;applySources()}}}catch(_){}
 if(hasBackend){const cb='__lastAsylumCouponPage';const script=document.createElement('script');window[cb]=j=>{if(j&&Array.isArray(j.codes)){sheetData=j;applySources()}script.remove();delete window[cb]};script.onerror=()=>{script.remove();delete window[cb]};script.src=endpoint+'?callback='+cb+'&t='+Date.now();document.head.append(script)}}
 $('resetBtn').onclick=()=>{if(!done.size){showToast('초기화할 사용 내역이 없어요');return}if(confirm('사용 완료 체크를 모두 초기화할까요?')){done.clear();save();$('usedDetails').open=false;render();showToast('모든 코드가 다시 표시돼요')}};
 function modal(type){reportType=type;$('dialogTitle').textContent=type==='add'?'＋ 쿠폰코드 추가 요청':'🚫 코드 사용 불가 제보';$('dialogIntro').textContent=type==='add'?'새 쿠폰코드를 알려주시면 관리자가 검토한 뒤 등록합니다.':'게임에서 쿠폰이 적용되지 않는 경우 제보해 주세요. 이미 등록한 계정에서만 사용 불가한 경우는 제외해 주세요.';$('reasonWrap').classList.toggle('hidden',type==='add');$('reportForm').reset();$('modalNotice').textContent='';$('overlay').classList.remove('hidden');$('reportCode').focus();}
 $('reportAdd').onclick=()=>modal('add');$('reportFail').onclick=()=>modal('invalid');$('closeModal').onclick=()=>$('overlay').classList.add('hidden');$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))$('overlay').classList.add('hidden')});document.addEventListener('keydown',e=>{if(e.key==='Escape')$('overlay').classList.add('hidden')});
-$('reportForm').onsubmit=async e=>{e.preventDefault();const code=cleanCode($('reportCode').value);const note=$('reportNote').value.trim().slice(0,300);const reason=reportType==='add'?'suggest':$('reportReason').value;const set=new Set(data.codes),blocked=new Set(data.blocked);const info=$('modalNotice');
-if(!/^[A-Z0-9]{5,24}$/.test(code)){info.textContent='영문·숫자로 된 코드 5~24자를 입력해주세요.';return}
-if(reportType==='add'&&set.has(code)){info.textContent='이미 목록에 등록된 코드예요.';return}
-if(reportType==='add'&&blocked.has(code)){info.textContent='이전에 사용 불가로 제보된 코드라 중복 등록되지 않아요.';return}
-if(reportType==='invalid'&&blocked.has(code)){info.textContent='이미 사용 불가로 분류된 코드예요.';return}
+$('reportForm').onsubmit=async e=>{e.preventDefault();const code=cleanCode($('reportCode').value);const note=$('reportNote').value.trim().slice(0,300);const reason=reportType==='add'?'suggest':$('reportReason').value;const set=new Set(data.codes.map(codeKey)),blocked=new Set(data.blocked.map(codeKey));const info=$('modalNotice');
+if(!/^[A-Za-z0-9]{5,24}$/.test(code)){info.textContent='영문·숫자로 된 코드 5~24자를 입력해주세요.';return}
+if(reportType==='add'&&set.has(codeKey(code))){info.textContent='이미 목록에 등록된 코드예요.';return}
+if(reportType==='add'&&blocked.has(codeKey(code))){info.textContent='이전에 사용 불가로 제보된 코드라 중복 등록되지 않아요.';return}
+if(reportType==='invalid'&&blocked.has(codeKey(code))){info.textContent='이미 사용 불가로 분류된 코드예요.';return}
 if(hasBackend){const payload=new URLSearchParams({action:'report',type:reportType,code,reason,note});try{await fetch(endpoint,{method:'POST',mode:'no-cors',body:payload,keepalive:true});$('overlay').classList.add('hidden');showToast('제보 전송 요청 완료 · 관리자 검토 대기')}catch(_){info.textContent='전송이 실패했어요. 잠시 후 다시 시도해주세요.'}return}
 const title=(reportType==='add'?'[쿠폰 추가 요청] ':'[사용 불가 제보] ')+code;
 const body=`종류: ${reportType}\n코드: ${code}\n사유: ${reason}\n설명: ${note||'(없음)'}\n※ 관리자 확인 후 반영 부탁드립니다.`;
