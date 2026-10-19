@@ -1,0 +1,46 @@
+
+name: LA 공식 기프트코드 자동 등록
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '13 * * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: la-giftcode-collector
+  cancel-in-progress: false
+
+jobs:
+  check-discord:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: 저장소 가져오기
+        uses: actions/checkout@v4
+
+      - name: 파이썬 준비
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: 디스코드 공식 공지 확인
+        env:
+          DISCORD_BOT_TOKEN: ${{ secrets.DISCORD_BOT_TOKEN }}
+          DISCORD_CHANNEL_ID: '1561596575501910120'
+          DISCORD_SOURCE_CHANNEL_ID: ${{ vars.DISCORD_SOURCE_CHANNEL_ID }}
+        run: python bot/collector.py
+
+      - name: 쿠폰 목록 저장
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add codes.json coupon-state.json coupon-publication-log.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'chore: update official gift codes'
+            git push
+          else
+            echo '새 코드 없음'
+          fi
