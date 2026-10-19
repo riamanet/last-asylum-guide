@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f5f7">
+<title>쿠폰코드 | LAST ASYLUM 공략</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f4f5f7;color:#20232a;font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.shell{max-width:560px;margin:auto;padding:24px 16px 60px}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.smallbtn{border:1px solid #e4e7eb;background:white;border-radius:13px;padding:10px 12px;color:#28303b;font-size:13px;font-weight:800;text-decoration:none;box-shadow:0 6px 18px #20242b0b}
+.brand{display:flex;justify-content:space-between;align-items:center;padding:28px 4px 16px}
+.brand small{color:#8a9099;letter-spacing:.16em;font-weight:850}
+.brand h1{margin:5px 0 0;font-size:31px;letter-spacing:-1.2px}.gift{font-size:46px}
+.summary{background:linear-gradient(125deg,#202832,#3b4554);color:#fff;padding:20px;border-radius:22px;box-shadow:0 12px 30px #18202d21}
+.summary p{margin:0;font-size:12px;color:#c8d2dc;font-weight:700}
+.summary b{font-size:30px;display:block;margin:5px 0 3px}.statsrow{display:flex;align-items:center;justify-content:space-between;gap:9px;color:#dae1e8;font-size:11px}
+.warning{font-size:12px;color:#8a6370;margin:10px 4px 4px;line-height:1.5}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+.action{min-height:51px;border:1px solid #dfe3e9;border-radius:14px;background:#fff;color:#242a33;font-size:13px;font-weight:850;padding:10px 8px;box-shadow:0 7px 20px #20242b0b}
+.action:active,.smallbtn:active,.copy:active{transform:scale(.985)}.action.add{background:#252a31;border-color:#252a31;color:white}
+.search{margin:16px 0 0;background:#fff;border:1px solid #e3e7eb;border-radius:14px;padding:0 13px;display:flex;align-items:center;gap:8px;height:49px}
+.search input{border:0;background:none;outline:0;width:100%;font-size:15px;min-width:0}
+.heading{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:24px 3px 11px}.heading h2{margin:0;font-size:19px}.heading small{font-size:11px;color:#8a9099}
+.list{display:flex;flex-direction:column;gap:9px}
+.coupon{min-height:65px;border:1px solid #e5e8eb;border-radius:17px;background:#fff;padding:14px;display:flex;justify-content:space-between;align-items:center;gap:10px;box-shadow:0 6px 21px #20242b0c;min-width:0}
+.value{font-weight:900;letter-spacing:.3px;font-size:16px;overflow-wrap:anywhere}
+.hint{font-size:11px;color:#98a0ac;margin-top:5px;white-space:normal}
+.right{display:grid;grid-template-columns:68px 68px;gap:7px;align-items:center;flex-shrink:0}
+/* 복사와 사용완료는 같은 크기·높이·정렬 */
+.copy,.markused{width:68px;height:44px;border-radius:11px;padding:0 5px;display:flex;align-items:center;justify-content:center;white-space:nowrap;font-size:12px;font-weight:850}
+.copy{background:#242a31;color:#fff;border:1px solid #242a31}
+.markused{background:#f3f5f7;color:#343d4a;border:1px solid #d8dde3}
+.markused:active,.copy:active{transform:scale(.985)}
+.check{display:flex;flex-direction:column;gap:3px;align-items:center;font-size:10px;color:#737c89;font-weight:750;cursor:pointer;white-space:nowrap}
+.check input{appearance:none;margin:0;border:2px solid #b4bbc5;border-radius:8px;width:25px;height:25px;cursor:pointer;background:#fff}
+.check input:checked{background:#242a31;border-color:#242a31}.check input:checked:before{content:'✓';color:white;display:grid;place-items:center;font-size:17px}
+.empty{text-align:center;padding:25px 15px;color:#8a9099;background:#fff;border:1px dashed #d9dfe5;border-radius:14px;font-size:13px}
+.fold{border-radius:17px;background:#fff;border:1px solid #e4e7eb;padding:0 14px;margin-top:16px}.fold summary{padding:16px 0;cursor:pointer;font-size:14px;font-weight:800;list-style:none}.fold summary::-webkit-details-marker{display:none}.fold summary:after{content:'⌄';float:right;color:#9299a3}.fold[open] summary:after{content:'⌃'}
+.fold-body{border-top:1px solid #ebedf0;padding:5px 0 10px}.fold-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #f1f2f3;font-size:13px}.fold-row:last-child{border-bottom:0}.fold-row b{overflow-wrap:anywhere}
+.restore{border:1px solid #dfe3e8;border-radius:9px;background:#f5f6f7;padding:8px 10px;font-weight:800;font-size:12px;color:#555c67}
+.bad{color:#959ca7;text-decoration:line-through}
+.note{color:#858e99;line-height:1.7;font-size:12px;margin:15px 4px 0}
+.overlay{position:fixed;inset:0;z-index:30;display:flex;justify-content:center;align-items:flex-end;background:#10192396;padding:12px}
+.modal{background:#fff;border-radius:22px;padding:22px 18px 20px;width:min(100%,540px);box-shadow:0 12px 50px #0003;max-height:90dvh;overflow:auto}
+.modalheader{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}.modal h2{margin:0;font-size:19px}.x{border:0;background:#f1f2f4;border-radius:10px;width:35px;height:35px;font-size:22px}
+.modal p{color:#77808c;line-height:1.5;font-size:12px;margin:0 0 14px}.field{display:block;margin:13px 0;font-size:13px;font-weight:800}
+.field input,.field textarea,.field select{margin-top:6px;display:block;width:100%;background:#f8f9fb;border:1px solid #e0e5eb;border-radius:11px;padding:12px;font-size:14px;color:#20232a;outline:none}
+.field textarea{resize:vertical;min-height:80px}.field input:focus,.field textarea:focus{border-color:#9aaab9}
+.modalnotice{font-size:12px;color:#a55463;min-height:18px;margin:9px 0}
+.submit{display:block;width:100%;border:0;background:#252a31;color:white;padding:14px;border-radius:12px;font-weight:850}
+.toast{position:fixed;bottom:26px;left:50%;transform:translate(-50%,12px);background:#252a31;color:#fff;box-shadow:0 12px 25px #0003;padding:12px 16px;border-radius:11px;font-size:13px;font-weight:800;white-space:nowrap;z-index:40;opacity:0;pointer-events:none;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:380px){.coupon{padding:12px 10px}.value{font-size:14px}.right{gap:5px}.copy{padding:9px 10px}.check{font-size:9px}}
+</style>
+<script src="./coupon-config.js"></script>
+</head>
+<body>
+<main class="shell">
+  <nav class="nav"><a class="smallbtn" href="./">‹ 이전</a><button class="smallbtn" type="button" id="resetBtn">↺ 초기화</button></nav>
+  <header class="brand"><div><small>LAST ASYLUM</small><h1>🎁 쿠폰코드</h1></div><span class="gift" aria-hidden="true">🎟️</span></header>
+  <section class="summary"><p>아직 사용 완료하지 않은 코드</p><b id="remainingCount">확인 중…</b><div class="statsrow"><span id="doneCount">사용 완료 0개</span><span id="updated">목록 갱신 중</span></div></section>
+  
+  <div class="actions"><button class="action" type="button" id="reportFail">🚫 코드 사용이 안 돼요</button><button class="action add" type="button" id="reportAdd">＋ 코드 추가해주세요</button></div>
+  <label class="search"><span>🔎</span><input id="search" aria-label="쿠폰코드 검색" placeholder="쿠폰코드 검색" autocomplete="off"></label>
+  <div class="heading"><h2>쿠폰 목록</h2><small id="listCount"></small></div>
+  <div class="list" id="codeList"></div>
+  <details class="fold" id="usedDetails"><summary id="usedSummary">사용 완료 코드 (0)</summary><div class="fold-body" id="usedList"></div></details>
+  <p class="note">사용 완료 기록은 내 브라우저에만 저장돼요. 공식 디스코드 공지는 자동 등록되며, 이용자 제보는 관리자 확인 후 추가됩니다.</p>
+</main>
+<div class="overlay hidden" id="overlay" role="dialog" aria-modal="true" aria-labelledby="dialogTitle">
+  <div class="modal">
+    <div class="modalheader"><h2 id="dialogTitle">코드 제보</h2><button class="x" type="button" aria-label="닫기" id="closeModal">×</button></div>
+    <p id="dialogIntro"></p>
+    <form id="reportForm">
+      <label class="field">쿠폰코드<input id="reportCode" name="code" maxlength="24" autocomplete="off" spellcheck="false" placeholder="코드를 입력해주세요" required></label>
+      <label class="field" id="reasonWrap">확인 결과<select id="reportReason"><option value="invalid">코드가 유효하지 않아요</option><option value="expired">만료된 것 같아요</option><option value="other">기타 문제</option></select></label>
+      <label class="field">추가 설명 (선택)<textarea id="reportNote" maxlength="300" placeholder="어떤 메시지가 나왔는지 알려주세요."></textarea></label>
+      <div id="modalNotice" class="modalnotice" aria-live="polite"></div>
+      <button class="submit" type="submit" id="submitReport">관리자에게 제보하기</button>
+    </form>
+  </div>
+</div>
+<div class="toast" id="toast" aria-live="polite" role="status"></div>
+<script>
+'use strict';
+const FALLBACK={updated:'2026-10-19',codes:['LAGRAN26','LA26CAFE1','LACAFE26','LA30W7F2M','LA25W8CM','LA20WBZ9','LA15WPN4D','LA1OW9F7X','LADCEX1223','LAKR15K9A','LAKR12K7O','LAKR10K6L','LAPKOR777','LAPJAP777','LAAS777','WLTLAP','61HW4LA','twlap666','twlap888'],blocked:['LAHD26','LAOKT26','LA14EBRN','LAQIXI26']};
+const STORAGE_KEY='last_asylum_guide_used_coupons_v1';
+const endpoint=(window.LAST_ASYLUM_COUPON_ENDPOINT||'').trim();
+const hasBackend=/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(endpoint);
+const $=s=>document.getElementById(s);
+let baseData=FALLBACK,sheetData=null;
+let data=FALLBACK,done=new Set(),reportType='add',toastTimer;
+try{const cached=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');if(Array.isArray(cached))done=new Set(cached.map(String));}catch(_){}
+const cleanCode=s=>String(s||'').trim().replace(/\s/g,'').toUpperCase();
+const list=a=>Array.isArray(a)?[...new Set(a.map(cleanCode).filter(s=>/^[A-Z0-9]{5,24}$/.test(s)))]:[];
+function applySources(){
+  const blocked=[...new Set([...list(baseData.blocked),...list(sheetData?.blocked)])];
+  const blockset=new Set(blocked);
+  data={updated:[baseData.updated,sheetData?.updated].filter(Boolean).sort().at(-1)||'미확인',
+    codes:[...new Set([...list(baseData.codes),...list(sheetData?.codes)])].filter(c=>!blockset.has(c)),blocked};
+  render();
+}
+function save(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify([...done]));}catch(_){showToast('사용 내역 저장에 실패했어요.')}}
+function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),2300)}
+function elem(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}
+async function copyCode(text){try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(text)}else{const e=elem('textarea');e.value=text;e.style.position='fixed';e.style.opacity='0';document.body.append(e);e.select();if(!document.execCommand('copy'))throw Error('copy failed');e.remove()}showToast(text+' 복사했어요')}catch(_){prompt('길게 눌러 코드를 복사해 주세요',text)}}
+function render(){const query=$('search').value.trim().toUpperCase();const active=data.codes.filter(c=>!done.has(c));const finished=data.codes.filter(c=>done.has(c));$('remainingCount').textContent=active.length+'개';$('doneCount').textContent='사용 완료 '+finished.length+'개';$('updated').textContent='업데이트 '+data.updated;$('listCount').textContent=active.length+'개';$('usedSummary').textContent=`사용 완료 코드 (${finished.length})`;
+  const main=$('codeList');main.replaceChildren();const matched=active.filter(s=>s.includes(query));if(!matched.length)main.append(elem('div','empty',active.length?'검색 결과가 없어요.':'모든 코드를 사용 완료했어요!'));
+  for(const code of matched){const card=elem('article','coupon');const text=elem('div');text.append(elem('div','value',code));const tools=elem('div','right');const copy=elem('button','copy','복사');copy.type='button';copy.onclick=()=>copyCode(code);const mark=elem('button','markused','✓ 사용완료');mark.type='button';mark.setAttribute('aria-label',code+' 사용 완료');mark.onclick=()=>{done.add(code);save();render();showToast('사용 완료 목록으로 옮겼어요')};tools.append(copy,mark);card.append(text,tools);main.append(card)}
+  const usedList=$('usedList');usedList.replaceChildren();if(!finished.length)usedList.append(elem('div','empty','사용 완료한 코드는 아직 없어요.'));
+  finished.forEach(code=>{const row=elem('div','fold-row');row.append(elem('b','',code));const btn=elem('button','restore','되돌리기');btn.onclick=()=>{done.delete(code);save();render()};row.append(btn);usedList.append(row)});
+}
+async function load(){applySources();try{const r=await fetch('./codes.json?t='+Date.now(),{cache:'no-store'});if(r.ok){const j=await r.json();if(Array.isArray(j.codes)){baseData=j;applySources()}}}catch(_){}
+if(hasBackend){const cb='__lastAsylumCouponPage';const script=document.createElement('script');window[cb]=j=>{if(j&&Array.isArray(j.codes)){sheetData=j;applySources()}script.remove();delete window[cb]};script.onerror=()=>{script.remove();delete window[cb]};script.src=endpoint+'?callback='+cb+'&t='+Date.now();document.head.append(script)}}
+$('search').addEventListener('input',render);
+$('resetBtn').onclick=()=>{if(!done.size){showToast('초기화할 사용 내역이 없어요');return}if(confirm('사용 완료 체크를 모두 초기화할까요?')){done.clear();save();$('usedDetails').open=false;render();showToast('모든 코드가 다시 표시돼요')}};
+function modal(type){reportType=type;$('dialogTitle').textContent=type==='add'?'＋ 쿠폰코드 추가 요청':'🚫 코드 사용 불가 제보';$('dialogIntro').textContent=type==='add'?'새 쿠폰코드를 알려주시면 관리자가 검토한 뒤 등록합니다.':'게임에서 쿠폰이 적용되지 않는 경우 제보해 주세요. 이미 등록한 계정에서만 사용 불가한 경우는 제외해 주세요.';$('reasonWrap').classList.toggle('hidden',type==='add');$('reportForm').reset();$('modalNotice').textContent='';$('overlay').classList.remove('hidden');$('reportCode').focus();}
+$('reportAdd').onclick=()=>modal('add');$('reportFail').onclick=()=>modal('invalid');$('closeModal').onclick=()=>$('overlay').classList.add('hidden');$('overlay').addEventListener('click',e=>{if(e.target===$('overlay'))$('overlay').classList.add('hidden')});document.addEventListener('keydown',e=>{if(e.key==='Escape')$('overlay').classList.add('hidden')});
+$('reportForm').onsubmit=async e=>{e.preventDefault();const code=cleanCode($('reportCode').value);const note=$('reportNote').value.trim().slice(0,300);const reason=reportType==='add'?'suggest':$('reportReason').value;const set=new Set(data.codes),blocked=new Set(data.blocked);const info=$('modalNotice');
+if(!/^[A-Z0-9]{5,24}$/.test(code)){info.textContent='영문·숫자로 된 코드 5~24자를 입력해주세요.';return}
+if(reportType==='add'&&set.has(code)){info.textContent='이미 목록에 등록된 코드예요.';return}
+if(reportType==='add'&&blocked.has(code)){info.textContent='이전에 사용 불가로 제보된 코드라 중복 등록되지 않아요.';return}
+if(reportType==='invalid'&&blocked.has(code)){info.textContent='이미 사용 불가로 분류된 코드예요.';return}
+if(hasBackend){const payload=new URLSearchParams({action:'report',type:reportType,code,reason,note});try{await fetch(endpoint,{method:'POST',mode:'no-cors',body:payload,keepalive:true});$('overlay').classList.add('hidden');showToast('제보 전송 요청 완료 · 관리자 검토 대기')}catch(_){info.textContent='전송이 실패했어요. 잠시 후 다시 시도해주세요.'}return}
+const title=(reportType==='add'?'[쿠폰 추가 요청] ':'[사용 불가 제보] ')+code;
+const body=`종류: ${reportType}\n코드: ${code}\n사유: ${reason}\n설명: ${note||'(없음)'}\n※ 관리자 확인 후 반영 부탁드립니다.`;
+const url='https://github.com/riamanet/last-asylum-guide/issues/new?title='+encodeURIComponent(title)+'&body='+encodeURIComponent(body);
+if(confirm('제보를 제출하려면 GitHub 로그인이 필요해요. 제보 작성 화면을 열까요?'))window.open(url,'_blank','noopener,noreferrer');
+};
+load();
+</script>
+</body>
+</html>
