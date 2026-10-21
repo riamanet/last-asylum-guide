@@ -16,7 +16,17 @@
 .coupon-shortcut:has(.coupon-dot:not([hidden])){border-color:#ee8792;box-shadow:0 4px 15px #ee39491a}
 .coupon-shortcut:focus-visible{outline:3px solid #a7cdeb;outline-offset:2px}
 @media(max-width:380px){.brandtop{gap:7px}.brand h1{font-size:27px}.coupon-shortcut{padding:10px 9px;gap:5px;font-size:12px}}
-</style></head><body><main class="app"><header class="brand"><div class="brandtop"><div><small>#252 CROW</small><h1>달콩쓰의 게임 공략</h1></div><a id="couponShortcut" class="coupon-shortcut" href="./coupons.html" aria-label="쿠폰코드"><span class="coupon-ico" aria-hidden="true">🎁<span id="couponNoticeDot" class="coupon-dot" hidden></span></span><span>쿠폰코드</span></a></div></header><div class="search"><span>🔍</span><input id="q" placeholder="공략을 검색하세요"><button id="searchBtn">확인</button></div><section id="results" class="section hidden"><div class="head"><h2>🔍 검색 결과</h2></div><div id="resultitems"></div></section><section id="grid" class="grid">
+
+/* 헤더 2줄 타이포그래피와 세로형 쿠폰 버튼 */
+.brandtop{align-items:stretch;gap:12px}
+.brandtop>div{display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0}
+.brandtop small{display:block;font-size:12px;letter-spacing:.035em;line-height:1.25;white-space:nowrap}
+.brandtop h1{margin:0;font-size:30px;line-height:1.14;letter-spacing:-1px;white-space:nowrap}
+.brandtop .coupon-shortcut{align-self:stretch;min-width:100px;min-height:0;flex-direction:column;gap:3px;padding:5px 12px;border-radius:14px}
+.brandtop .coupon-ico{font-size:23px;line-height:1.05}
+.brandtop .coupon-label{font-size:14px;line-height:1.2;font-weight:800}
+@media(max-width:380px){.brandtop{gap:8px}.brandtop h1{font-size:28px}.brandtop .coupon-shortcut{min-width:91px;padding:5px 8px}.brandtop .coupon-label{font-size:13px}}
+</style></head><body><main class="app"><header class="brand"><div class="brandtop"><div><small>#252 CROW 달콩쓰</small><h1>게임 공략</h1></div><a id="couponShortcut" class="coupon-shortcut" href="./coupons.html" aria-label="쿠폰코드"><span class="coupon-ico" aria-hidden="true">🎁<span id="couponNoticeDot" class="coupon-dot" hidden></span></span><span class="coupon-label">쿠폰코드</span></a></div></header><div class="search"><span>🔍</span><input id="q" placeholder="공략을 검색하세요"><button id="searchBtn">확인</button></div><section id="results" class="section hidden"><div class="head"><h2>🔍 검색 결과</h2></div><div id="resultitems"></div></section><section id="grid" class="grid">
 <button class="card" data-c="beginner"><span class="ico">🌱</span><b>초보자 가이드</b></button><button class="card" data-c="hero"><span class="ico">👑</span><b>영웅</b></button><div class="drop hidden" data-row="beginner,hero"></div>
 <button class="card" data-c="guild"><span class="ico">⚔️</span><b>길드전</b></button><button class="card" data-c="warrior"><span class="ico">🛡️</span><b>전사</b></button><div class="drop hidden" data-row="guild,warrior"></div>
 <button class="card" data-c="calculator"><span class="ico">🧮</span><b>계산기</b></button><button class="card" data-c="ranger"><span class="ico">🏹</span><b>레인저</b></button><div class="drop hidden" data-row="calculator,ranger"></div>
