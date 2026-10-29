@@ -1,1 +1,0 @@
-(()=>{const d=document.getElementById('couponNoticeDot');fetch('./codes.json').then(r=>r.json()).then(x=>{const used=JSON.parse(localStorage.getItem('last_asylum_guide_used_coupons_v1')||'[]');d.hidden=!x.codes.some(c=>!used.includes(c))}).catch(()=>{});})();
